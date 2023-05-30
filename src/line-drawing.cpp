@@ -7,23 +7,37 @@ constexpr int height=500;
 
 void line_draw(int x0,int y0,int x1,int y1,TGAImage &img,TGAColor color)
 {
+    
+    std::cout<<"writing a line from ("<<x0<<","<<y0<<") to ("<<x1<<","<<y1<<")"<<std::endl;
+
     //double t belongs to [0,1]
     int dx,dy;
     dx=x1-x0;
     dy=y1-y0;
-    if(dx>dy)
+    if(std::abs(dx)>std::abs(dy))
     {
-        double k=dy/dx;
-        for(int t=0;t<=dx;t++)
+        double xincr=1.0*dx/std::abs(dx);
+        double yincr=1.0*dy/std::abs(dx);
+        double x=x0,y=y0;
+        for(int t=std::abs(dx);t>0;t--)
         {
-            img.set(x0+t,y0+k*t,color);
+            img.set(x,y,color);
+            x+=xincr;
+            y+=yincr;
+            std::cout<<"("<<x<<","<<y<<")"<<std::endl;
         }
-    }else
+    }
+    else
     {
-        double k=dx/dy;
-        for(int t=0;t<=dy;t++)
+        double xincr=dx/std::abs(dy);
+        double yincr=dy/std::abs(dy);
+        double x=x0,y=y0;
+        for(int t=std::abs(dy);t>0;t--)
         {
-            img.set(x0+k*t,y0+t,color);
+            img.set(x,y,color);
+            x+=xincr;
+            y+=yincr;
+            std::cout<<"("<<x<<","<<y<<")"<<std::endl;
         }
     }
 }
