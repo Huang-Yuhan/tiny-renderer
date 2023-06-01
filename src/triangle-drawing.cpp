@@ -7,14 +7,15 @@
 #include<algorithm>
 
 typedef glm::vec4 Triangle_Color;
+typedef glm::vec3 Triangle_Vertex;
 
 class Triangle
 {
     private:
-    glm::vec2 vertices[3];
+    Triangle_Vertex vertices[3];
     Triangle_Color color[3];
     public:
-    Triangle(glm::vec2 a,glm::vec2 b,glm::vec2 c,Triangle_Color aa,Triangle_Color bb,Triangle_Color cc)
+    Triangle(Triangle_Vertex a,Triangle_Vertex b,Triangle_Vertex c,Triangle_Color aa,Triangle_Color bb,Triangle_Color cc)
     {
         vertices[0]=a;
         vertices[1]=b;
@@ -28,7 +29,7 @@ class Triangle
     glm::vec3 get_barycentric_coordinates(glm::vec2 vertex)
     {
         float alpha,beta,gamma;
-        glm::vec2 &a=vertices[0],&b=vertices[1],&c=vertices[2];
+        Triangle_Vertex &a=vertices[0],&b=vertices[1],&c=vertices[2];
         gamma = ((a.y-b.y)*vertex.x+(b.x-a.x)*vertex.y+a.x*b.y-b.x*a.y) / ((a.y-b.y)*c.x+(b.x-a.x)*c.y+a.x*b.y-b.x*a.y);
         beta = ((a.y-c.y)*vertex.x+(c.x-a.x)*vertex.y+a.x*c.y-c.x*a.y) / ((a.y-c.y)*b.x+(c.x-a.x)*b.y+a.x*c.y-c.x*a.y);
         alpha = 1 - beta - gamma;
@@ -84,12 +85,11 @@ void draw_triangle(Triangle &triangle,TGAImage &img)
 
         }
 }
-
 int main(int argc,char *argv[])
 {
     TGAImage img(500,500,TGAImage::RGB);
-    Triangle_Color white=glm::vec4(255,255,255,255);
-    Triangle triangle(glm::vec2(400,400),glm::vec2(200,400),glm::vec2(300,100),white,white,white);
+    Triangle_Color white=Triangle_Color(255,255,255,255);
+    Triangle triangle(Triangle_Vertex(400,400,0),Triangle_Vertex(200,400,0),Triangle_Vertex(300,100,0),white,white,white);
 
     draw_triangle(triangle,img);
 
