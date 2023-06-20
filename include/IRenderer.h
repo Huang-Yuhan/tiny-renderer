@@ -4,7 +4,7 @@
 #include <memory>
 #include "ICamera.h"
 
-namespace IRender
+namespace IRenderSpace
 {
 
     /**
@@ -15,20 +15,20 @@ namespace IRender
     {
         private:
         int width,height;
-        std::shared_ptr<IShader::IShader> shader;
-        std::shared_ptr<ICamera::ICamera> camera;
-        std::shared_ptr<IModel::IModel> model;
+        std::shared_ptr<IShaderSpace::IShader> shader;
+        std::shared_ptr<ICameraSpace::ICamera> camera;
+        std::shared_ptr<IModelSpace::IModel> model;
         std::string filePath;
         public:
-        void setModel(std::shared_ptr<IModel::IModel> _model)
+        void setModel(std::shared_ptr<IModelSpace::IModel> _model)
         {
             model = _model;
         }
-        void setShader(std::shared_ptr<IShader::IShader> _shader)
+        void setShader(std::shared_ptr<IShaderSpace::IShader> _shader)
         {
             shader = _shader;
         }
-        void setCamera(std::shared_ptr<ICamera::ICamera> _camera)
+        void setCamera(std::shared_ptr<ICameraSpace::ICamera> _camera)
         {
             camera = _camera;
         }

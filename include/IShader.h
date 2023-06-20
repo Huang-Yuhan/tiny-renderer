@@ -2,7 +2,7 @@
 #include<glm/matrix.hpp>
 #include"tgaimage.h"
 
-namespace IShader
+namespace IShaderSpace
 {
 
     typedef glm::vec3 Light_Type;

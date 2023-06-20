@@ -1,6 +1,6 @@
 #include<string>
 
-namespace IModel
+namespace IModelSpace
 {
 
     /**

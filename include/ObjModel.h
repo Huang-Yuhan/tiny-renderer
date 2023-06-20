@@ -30,6 +30,14 @@ namespace IModel
     class ObjModel:public IModel
     {
     private:
+        /**
+         * @brief
+         * 按照顺序依次为：
+         * 顶点坐标
+         * 贴图坐标
+         * 面
+         * 法向量
+         */
         std::vector<Vertex_Type> vertices;
         std::vector<UV_Type> uvs;
         std::vector<Face_Type> faces;

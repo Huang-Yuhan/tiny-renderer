@@ -1,7 +1,7 @@
 #include<glm/vec3.hpp>
 #include<glm/matrix.hpp>
 
-namespace ICamera
+namespace ICameraSpace
 {
     typedef glm::mat4 mat;
     typedef glm::vec3 Position_Type;
@@ -27,6 +27,30 @@ namespace ICamera
         Position_Type getCameraPosition()const
         {
             return this->cameraPosition;
+        }
+        void setCameraDirection(Direction_Type cameraDirection)
+        {
+            this->cameraDirection=cameraDirection;
+        }
+        Direction_Type getCameraDirection()const
+        {
+            return this->cameraDirection;
+        }
+        void setCameraRight(Direction_Type cameraRight)
+        {
+            this->cameraRight=cameraRight;
+        }
+        Direction_Type getCameraRight()const
+        {
+            return this->cameraRight;
+        }
+        void setCameraUp(Direction_Type cameraUp)
+        {
+            this->cameraUp=cameraUp;
+        }
+        Direction_Type getCameraUp()const
+        {
+            return this->cameraUp;
         }
     };
 
