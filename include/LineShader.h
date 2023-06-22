@@ -1,6 +1,6 @@
 /**
  * @file LineShader.h
- * @author your name (icecream_sarkaz)
+ * @author icecream_sarkaz
  * @brief 
  * @version 0.1
  * @date 2023-06-20
@@ -21,12 +21,7 @@ class LineShader:public IShaderSpace::IShader
 {
 private:
     /* data */
-    typedef glm::mat4 Matrix_Type;
-    typedef glm::vec4 homogenous_Vertex_Type;
-    Matrix_Type modelTransformMatrix;
-    Matrix_Type viewTransformMatrix;
-    Matrix_Type projectionTransformMatrix;
-    Matrix_Type ViewportTransformMatrix;
+    
 public:
     LineShader();
     ~LineShader();
@@ -39,8 +34,8 @@ public:
     IShaderSpace::Vertex_Type vertex_shader(IShaderSpace::Vertex_Type vertex)override
     {
         //Vertex_Type  = vec3
-        homogenous_Vertex_Type homogenous_vertex=homogenous_Vertex_Type(vertex,1.0f);
-        homogenous_Vertex_Type res = ViewportTransformMatrix*projectionTransformMatrix*viewTransformMatrix*modelTransformMatrix*homogenous_vertex;
+        IShaderSpace::homogenous_Vertex_Type homogenous_vertex=IShaderSpace::homogenous_Vertex_Type(vertex,1.0f);
+        IShaderSpace::homogenous_Vertex_Type res = ViewportTransformMatrix*projectionTransformMatrix*viewTransformMatrix*modelTransformMatrix*homogenous_vertex;
         return IShaderSpace::Vertex_Type(res.x/res.w,res.y/res.w,res.z/res.w);
     }
     /**
@@ -52,41 +47,6 @@ public:
         /*在LineShader中不实现fragment shader*/
         color=TGAColor(255,255,255,255);
     }
-    /**
-     * @brief 
-     * Settter & Getter
-     */
-    void setModelTransformMatrix(Matrix_Type modelTransformMatrix)
-    {
-        this->modelTransformMatrix=modelTransformMatrix;
-    }
-    void setViewTransformMatrix(Matrix_Type viewTransformMatrix)
-    {
-        this->viewTransformMatrix=viewTransformMatrix;
-    }
-    void setProjectionTransformMatrix(Matrix_Type projectionTransformMatrix)
-    {
-        this->projectionTransformMatrix=projectionTransformMatrix;
-    }
-    void setViewportTransformMatrix(Matrix_Type ViewportTransformMatrix)
-    {
-        this->ViewportTransformMatrix=ViewportTransformMatrix;
-    }
-    Matrix_Type getModelTransformMatrix()
-    {
-        return modelTransformMatrix;
-    }
-    Matrix_Type getViewTransformMatrix()
-    {
-        return viewTransformMatrix;
-    }
-    Matrix_Type getProjectionTransformMatrix()
-    {
-        return projectionTransformMatrix;
-    }
-    Matrix_Type getViewportTransformMatrix()
-    {
-        return ViewportTransformMatrix;
-    }
+    
 };
 

@@ -110,20 +110,21 @@ $$
 $$
 其中$R,U,D,P$分别表示摄像机的cameraRight,cameraUp,cameraDirection,cameraPostion
 glm库提供了lookAt()函数，可以直接进行构造，不过在本项目我们将**手动构造**
-有关LookAt矩阵的更多信息可以[点击这里](https://learnopengl-cn.github.io/01%20Getting%20started/09%20Camera/)
+有关LookAt矩阵的更多信息可以[点击这里](https://learnopengl-cn.github.io/01%20Getting%20started/09%20Camera/),
 **注意:glm中的matrix是列主序的，所以在构造的时候需要注意**
 - $M_{Perspective}$是透视投影矩阵，构造方式如下：
 $$
 \begin{bmatrix}
-  \frac{1}{aspect} \times \tan(\frac{fov}{2}) & 0 & 0 & 0 \\
-  0 & \tan(\frac{fov}{2}) & 0 & 0 \\
-  0 & 0 & \frac{far + near}{far - near} & \frac{-2 \times far \times near}{far - near} \\
-  0 & 0  &1 & 0
+\frac{1}{n\tan(\frac{fov}{2})}&0&0&0\\
+0&\frac{aspect}{n\tan(\frac{fov}{2})}&0&0\\
+0&0&\frac{n+f}{n-f}&\frac{2nf}{n-f}\\
+0&0&1&0
 \end{bmatrix}
 $$
 其中$aspect$表示屏幕的宽高比，$fov$表示视野，$near$和$far$分别表示近平面和远平面的距离
 glm库提供了perspective()函数，可以直接进行构造，不过在本项目我们将**手动构造**
 有关透视投影矩阵的更多信息可以[点击这里](https://learnopengl-cn.github.io/01%20Getting%20started/08%20Coordinate%20Systems/)
+可以看同目录下的perspective.md文件
 - $M_{Viewport}$是视口变换矩阵，构造方式如下：
 $$
 \begin{bmatrix}

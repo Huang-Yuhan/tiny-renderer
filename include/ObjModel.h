@@ -4,13 +4,7 @@
 #include<glm/vec2.hpp>
 #include<fstream>
 #include<iostream>
-
-typedef glm::vec3 Vertex_Type;
-typedef glm::vec2 UV_Type;
-typedef glm::ivec3 Face_Type;
-typedef glm::vec3 Normal_Type;
-
-namespace IModel
+namespace IModelSpace
 {
 
     /**
@@ -30,18 +24,7 @@ namespace IModel
     class ObjModel:public IModel
     {
     private:
-        /**
-         * @brief
-         * 按照顺序依次为：
-         * 顶点坐标
-         * 贴图坐标
-         * 面
-         * 法向量
-         */
-        std::vector<Vertex_Type> vertices;
-        std::vector<UV_Type> uvs;
-        std::vector<Face_Type> faces;
-        std::vector<Normal_Type> normals;
+
     public:
         /**
          * @brief

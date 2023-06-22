@@ -15,7 +15,7 @@ namespace ICameraSpace
     {
         private:
         Position_Type cameraPosition;
-        Direction_Type cameraDirection;
+        Direction_Type cameraDirection; //应该是实际direction的负数
         Direction_Type cameraRight;
         Direction_Type cameraUp;
         public:

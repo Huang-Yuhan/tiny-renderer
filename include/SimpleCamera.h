@@ -7,6 +7,9 @@
 class SimpleCamera:public ICameraSpace::ICamera
 {
 private:
+    ICameraSpace::mat lookAt;
+    ICameraSpace::mat perspective;
+    bool needUpdateLookAt=true;
 public:
     /**
      * @brief Get the Look At object
@@ -15,6 +18,8 @@ public:
      */ 
     ICameraSpace::mat GetLookAt() override
     {
+        if(!needUpdateLookAt)return lookAt;
+
         ICameraSpace::mat leftMat=ICameraSpace::mat(1.0f);
         ICameraSpace::mat rightMat=ICameraSpace::mat(1.0f);
 
@@ -36,6 +41,28 @@ public:
         leftMat[1][2]=this->getCameraDirection().y;
         leftMat[2][2]=this->getCameraDirection().z;
 
+        needUpdateLookAt=false;
+
         return leftMat*rightMat;
+    }
+    void setCameraPosition(ICameraSpace::Position_Type cameraPosition)
+    {
+        ICameraSpace::ICamera::setCameraPosition(cameraPosition);
+        needUpdateLookAt=true;
+    }
+    void setCameraDirection(ICameraSpace::Direction_Type cameraDirection)
+    {
+        ICameraSpace::ICamera::setCameraDirection(cameraDirection);
+        needUpdateLookAt=true;
+    }
+    void setCameraRight(ICameraSpace::Direction_Type cameraRight)
+    {
+        ICameraSpace::ICamera::setCameraRight(cameraRight);
+        needUpdateLookAt=true;
+    }
+    void setCameraUp(ICameraSpace::Direction_Type cameraUp)
+    {
+        ICameraSpace::ICamera::setCameraUp(cameraUp);
+        needUpdateLookAt=true;
     }
 };
