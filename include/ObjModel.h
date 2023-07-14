@@ -41,7 +41,7 @@ namespace IModelSpace
             fin.open(filePath);
             if(fin.fail())
             {
-                std::cout<< "read model file fail !!\n";
+                std::cout<< "read model file fail !!\n\n";
                 exit(0);
             }
 
@@ -82,30 +82,30 @@ namespace IModelSpace
 
             //输出读取的数据
 
-            std::cout<<"read file success !!"<<std::endl;
-            std::cout<<"file name : "<<filePath<<std::endl;
-            std::cout<<"vertices size: "<<vertices.size()<<std::endl;
-            std::cout<<"vertices are :"<<std::endl;
+            std::cout<<"read file success !!\n"<<std::endl;
+            std::cout<<"file name : "<<filePath<<std::endl<<std::endl;
+            std::cout<<"vertices size: "<<vertices.size()<<std::endl<<std::endl;
+            std::cout<<"vertices are :"<<std::endl<<std::endl;
             for(auto &v:vertices)
             {
                 std::cout<<v.x<<" "<<v.y<<" "<<v.z<<std::endl;
             }
-            std::cout<<"normals size: "<<normals.size()<<std::endl;
-            std::cout<<"normals are :"<<std::endl;
+            std::cout<<"normals size: "<<normals.size()<<std::endl<<std::endl;
+            std::cout<<"normals are :"<<std::endl<<std::endl;
             for(auto &v:normals)
             {
                 std::cout<<v.x<<" "<<v.y<<" "<<v.z<<std::endl;
             }
 
-            std::cout<<"uvs size: "<<uvs.size()<<std::endl;
-            std::cout<<"uvs are :"<<std::endl;
+            std::cout<<"uvs size: "<<uvs.size()<<std::endl<<std::endl;
+            std::cout<<"uvs are :"<<std::endl<<std::endl;
             for(auto &v:uvs)
             {
                 std::cout<<v.x<<" "<<v.y<<std::endl;
             }
 
-            std::cout<<"faces size: "<<faces.size()<<std::endl;
-            std::cout<<"faces are :"<<std::endl;
+            std::cout<<"faces size: "<<faces.size()<<std::endl<<std::endl;
+            std::cout<<"faces are :"<<std::endl<<std::endl;
             for(auto &v:faces)
             {
                 std::cout<<std::get<0>(v)[0]<<"/"<<std::get<0>(v)[1]<<"/"<<std::get<0>(v)[2]<<" ";
