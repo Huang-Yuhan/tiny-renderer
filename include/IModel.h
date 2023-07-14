@@ -28,9 +28,21 @@ namespace IModelSpace
         std::vector<Face_Type> faces;
         std::vector<Normal_Type> normals;
         virtual void readModel(const std::string &filePath)=0;
-        virtual std::vector<Vertex_Type>& getVertices()=0;
-        virtual std::vector<UV_Type>& getUVs()=0;
-        virtual std::vector<Face_Type>& getFaces()=0;
-        virtual std::vector<Normal_Type>& getNormals()=0;
+        std::vector<Vertex_Type>& getVertices()
+        {
+            return vertices;
+        }
+        std::vector<UV_Type>& getUVs()
+        {
+            return uvs;
+        }
+        std::vector<Face_Type>& getFaces()
+        {
+            return faces;
+        }
+        std::vector<Normal_Type>& getNormals()
+        {
+            return normals;
+        }
     };
 }

@@ -13,6 +13,8 @@
 #include "SimpleCamera.h"
 #include "ObjModel.h"
 #include "tgaimage.h"
+#include<glm/glm.hpp>
+#include<glm/gtc/matrix_transform.hpp>
 
 #include <memory>
 
@@ -37,6 +39,7 @@ public:
     LineRenderer(int width,int height,std::string filePath);
     void init();
     void render();
+    void TestInfo();
     
 };
 
@@ -48,6 +51,8 @@ width(width),height(height),filePath(filePath)
     model=std::make_unique<IModelSpace::ObjModel>();
     model->readModel(filePath);
     image=TGAImage(width,height,TGAImage::RGB);
+    nearPlane=0.1;
+    farPlane=1000;
 }
 
 /**
@@ -57,7 +62,7 @@ width(width),height(height),filePath(filePath)
 void LineRenderer::init()
 {
     //set camera
-    camera->setCameraPosition(glm::vec3(0.0f,0.0f,3.0f));
+    camera->setCameraPosition(glm::vec3(0.0f,5.0f,0.0f));
     camera->setCameraDirection(glm::normalize(camera->getCameraPosition()));
     constexpr glm::vec3 up = glm::vec3(0.0f,1.0f,0.0f);
     camera->setCameraRight(glm::normalize(glm::cross(up,camera->getCameraUp())));
@@ -166,4 +171,94 @@ void LineRenderer::drawLine(double x0,double y0,double x1,double y1)
             std::cout<<"("<<x<<","<<y<<")"<<std::endl;
         }
     }
+}
+
+/**
+ * @brief 输出一些测试信息
+ * 
+ */
+void LineRenderer::TestInfo()
+{
+    //输出在Linerenderer中的矩阵
+    std::cout<<"Matrices in LineRenderer:"<<std::endl;
+    //perspective matrix
+    std::cout<<"perspective matrix:"<<std::endl;
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            std::cout<<shader->projectionTransformMatrix[i][j]<<" ";
+        }
+        std::cout<<std::endl;
+    }
+    //viewport matrix
+    std::cout<<"viewport matrix:"<<std::endl;
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            std::cout<<shader->ViewportTransformMatrix[i][j]<<" ";
+        }
+        std::cout<<std::endl;
+    }
+    //viewTransformMatrix
+    std::cout<<"viewTransformMatrix:"<<std::endl;
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            std::cout<<shader->viewTransformMatrix[i][j]<<" ";
+        }
+        std::cout<<std::endl;
+    }
+
+    //用glm构造出来的矩阵
+    std::cout<<"Matrices in glm:"<<std::endl;
+    //perspective matrix
+    std::cout<<"perspective matrix:"<<std::endl;
+    auto glm_perspective=glm::perspective(glm::radians(fov),width/height*1.0,nearPlane*1.0,1.0*farPlane);
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            std::cout<<glm_perspective[i][j]<<" ";
+        }
+        std::cout<<std::endl;
+    }
+
+    //viewport matrix
+    std::cout<<"viewport matrix:"<<std::endl;
+    auto glm_viewport=glm::mat4(1.0);
+    glm_viewport[0][0]=width/2.0;
+    glm_viewport[1][1]=height/2.0;
+    glm_viewport[2][2]=(farPlane-nearPlane)/2.0;
+    glm_viewport[3][0]=width/2.0;
+    glm_viewport[3][1]=height/2.0;
+    glm_viewport[3][2]=(farPlane+nearPlane)/2.0;
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            std::cout<<glm_viewport[i][j]<<" ";
+        }
+        std::cout<<std::endl;
+    }
+
+
+    //viewTransformMatrix
+    std::cout<<"viewTransformMatrix:"<<std::endl;
+    auto glm_lookat=glm::lookAt(camera->getCameraPosition(),glm::vec3(0,0,0),camera->getCameraUp());
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            std::cout<<glm_lookat[i][j]<<" ";
+        }
+        std::cout<<std::endl;
+    }
+
+    shader->projectionTransformMatrix=glm_perspective;
+    shader->ViewportTransformMatrix=glm_viewport;
+    shader->viewTransformMatrix=glm_lookat;
+    render();
 }

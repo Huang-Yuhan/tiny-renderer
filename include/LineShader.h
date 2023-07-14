@@ -23,8 +23,8 @@ private:
     /* data */
     
 public:
-    LineShader();
-    ~LineShader();
+    LineShader()=default;
+    ~LineShader()=default;
     /**
      * @brief 
      * 
