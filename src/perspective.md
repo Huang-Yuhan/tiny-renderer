@@ -138,7 +138,7 @@ $r,l,t,b$的定义跟Fundemental Of Computer Graphics中的一样
 
 一般来说我们都有
 
-$$l=-r\\ 
+$$l=-r\\
 b=-t$$
 
 所以上式可以变为
@@ -158,8 +158,8 @@ $$
 
 $$
 \begin{aligned}
-r&=n\tan(\frac{fov}{2})\\
-t&=r/aspect
+t&=n\tan(\frac{fov}{2})\\
+r&=t\times aspect
 \end{aligned}
 $$
 
@@ -167,8 +167,8 @@ $$
 
 $$
 \begin{bmatrix}
-\frac{1}{n\tan(\frac{fov}{2})}&0&0&0\\
-0&\frac{aspect}{n\tan(\frac{fov}{2})}&0&0\\
+\frac{1}{aspect\tan(\frac{fov}{2})}&0&0&0\\
+0&\frac{1}{\tan(\frac{fov}{2})}&0&0\\
 0&0&\frac{n+f}{n-f}&\frac{2nf}{n-f}\\
 0&0&1&0
 \end{bmatrix}

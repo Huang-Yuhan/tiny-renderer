@@ -33,7 +33,7 @@ private:
     std::unique_ptr<IShaderSpace::IShader> shader;
     std::unique_ptr<ICameraSpace::ICamera> camera;
     std::unique_ptr<IModelSpace::IModel> model;
-    TGAImage image;
+    std::unique_ptr<TGAImage> image;
     /*function*/
     IShaderSpace::Matrix_Type GetPerspective();
     IShaderSpace::Matrix_Type GetViewport();
@@ -43,6 +43,7 @@ public:
     void init();
     void render();
     void TestInfo();
+    void checkMatrixEqual();
 };
 
 LineRenderer::LineRenderer(int width,int height,std::string filePath):
@@ -52,9 +53,10 @@ width(width),height(height),filePath(filePath)
     camera=std::make_unique<SimpleCamera>();
     model=std::make_unique<IModelSpace::ObjModel>();
     model->readModel(filePath);
-    image=TGAImage(width,height,TGAImage::RGB);
+    image=std::make_unique<TGAImage>(width,height,TGAImage::RGB);
     nearPlane=0.1;
     farPlane=100;
+    fov=50;
 }
 
 /**
@@ -64,7 +66,7 @@ width(width),height(height),filePath(filePath)
 void LineRenderer::init()
 {
     //set camera
-    camera->setCameraPosition(glm::vec3(5.0f,5.0f,5.0f));
+    camera->setCameraPosition(glm::vec3(5.0f,.0f,.0f));
     camera->setCameraTarget(glm::vec3(0.0f,0.0f,0.0f));
     camera->initVector();
 
@@ -74,6 +76,9 @@ void LineRenderer::init()
     shader->viewTransformMatrix=camera->GetLookAt();
     shader->projectionTransformMatrix=GetPerspective();
     shader->ViewportTransformMatrix=GetViewport();
+
+    checkMatrixEqual();
+
 }
 
 /**
@@ -86,9 +91,9 @@ void LineRenderer::render()
 {
     for(int i=0;i<model->faces.size();i++)
     {
-        IModelSpace::Vertex_Type v0=model->vertices[std::get<0>(model->faces[i])[0]];
-        IModelSpace::Vertex_Type v1=model->vertices[std::get<1>(model->faces[i])[0]];
-        IModelSpace::Vertex_Type v2=model->vertices[std::get<2>(model->faces[i])[0]];
+        IModelSpace::Vertex_Type v0=model->vertices[std::get<0>(model->faces[i])[0]-1];
+        IModelSpace::Vertex_Type v1=model->vertices[std::get<1>(model->faces[i])[0]-1];
+        IModelSpace::Vertex_Type v2=model->vertices[std::get<2>(model->faces[i])[0]-1];
 
         IShaderSpace::Vertex_Type sv0=shader->vertex_shader(v0);
         IShaderSpace::Vertex_Type sv1=shader->vertex_shader(v1);
@@ -98,7 +103,8 @@ void LineRenderer::render()
         drawLine(sv1.x,sv1.y,sv2.x,sv2.y);
         drawLine(sv2.x,sv2.y,sv0.x,sv0.y);
     }
-
+    image->flip_vertically();
+    image->write_tga_file("LineRenderer_output.tga");
 }
 
 /**
@@ -107,14 +113,15 @@ void LineRenderer::render()
  */
 IShaderSpace::Matrix_Type LineRenderer::GetPerspective()
 {
-    ICameraSpace::mat projectionMatrix;
-    double aspectRatio=width/height;
-    double r = nearPlane * tan(fov / 2);
-    projectionMatrix[0][0] = 1/r;
-    projectionMatrix[1][1] = aspectRatio/r;
+    ICameraSpace::mat projectionMatrix=ICameraSpace::mat(1.0f);
+    double aspectRatio=1.0*width/height;
+    double tanHalfFov=tan(glm::radians(fov)/2);             //radians是线性函数，将角度转化为弧度
+    projectionMatrix[0][0] = 1/(aspectRatio*tanHalfFov);
+    projectionMatrix[1][1] =  1/tanHalfFov;
     projectionMatrix[2][2] = (nearPlane + farPlane) / (nearPlane - farPlane);
     projectionMatrix[2][3] = -1;
     projectionMatrix[3][2] = 2 * nearPlane * farPlane / (nearPlane - farPlane);
+    projectionMatrix[3][3] = 0;
 
     return projectionMatrix;
 }
@@ -150,10 +157,10 @@ void LineRenderer::drawLine(double x0,double y0,double x1,double y1)
         double x=x0,y=y0;
         for(int t=std::abs(dx);t>0;t--)
         {
-            image.set(x,y,TGAColor(255,255,255,255));
+            image->set(x,y,TGAColor(255,255,255,255));
             x+=xincr;
             y+=yincr;
-            std::cout<<"("<<x<<","<<y<<")"<<std::endl;
+            //std::cout<<"("<<x<<","<<y<<")"<<std::endl;
         }
     }
     else
@@ -163,10 +170,10 @@ void LineRenderer::drawLine(double x0,double y0,double x1,double y1)
         double x=x0,y=y0;
         for(int t=std::abs(dy);t>0;t--)
         {
-            image.set(x,y,TGAColor(255,255,255,255));
+            image->set(x,y,TGAColor(255,255,255,255));
             x+=xincr;
             y+=yincr;
-            std::cout<<"("<<x<<","<<y<<")"<<std::endl;
+            //std::cout<<"("<<x<<","<<y<<")"<<std::endl;
         }
     }
 }
@@ -214,7 +221,7 @@ void LineRenderer::TestInfo()
     std::cout<<"Matrices in glm:"<<std::endl;
     //perspective matrix
     std::cout<<"perspective matrix:"<<std::endl;
-    auto glm_perspective=glm::perspective(glm::radians(fov),width/height*1.0,nearPlane*1.0,1.0*farPlane);
+    auto glm_perspective=glm::perspective(glm::radians(fov),1.0*width/height,nearPlane,farPlane);
     for(int i=0;i<4;i++)
     {
         for(int j=0;j<4;j++)
@@ -255,8 +262,50 @@ void LineRenderer::TestInfo()
         std::cout<<std::endl;
     }
 
+    /*
     shader->projectionTransformMatrix=glm_perspective;
     shader->ViewportTransformMatrix=glm_viewport;
     shader->viewTransformMatrix=glm_lookat;
-    render();
+    std::cout<<"TestInfo ready to renderer"<<std::endl<<std::endl;
+    render();*/
+}
+
+void LineRenderer::checkMatrixEqual()
+{
+    auto glm_lookat=glm::lookAt(camera->getCameraPosition(),glm::vec3(0,0,0),glm::vec3(0,1,0));
+    auto glm_perspective=glm::perspective(glm::radians(fov),1.0*width/height,nearPlane,farPlane);
+    auto glm_viewport=glm::mat4(1.0);
+    glm_viewport[0][0]=width/2.0;
+    glm_viewport[1][1]=height/2.0;
+    glm_viewport[2][2]=(farPlane-nearPlane)/2.0;
+    glm_viewport[3][0]=width/2.0;
+    glm_viewport[3][1]=height/2.0;
+    glm_viewport[3][2]=(farPlane+nearPlane)/2.0;
+
+    bool flag=true;
+
+    for(int i=0;i<4;i++)
+        for(int j=0;j<4;j++)
+        {
+            if(std::abs(glm_lookat[i][j]-shader->viewTransformMatrix[i][j])>0.0001)
+            {
+                flag=false;
+                std::cout<<"viewTransformMatrix not equal"<<std::endl;
+                std::cout<<"glm:"<<glm_lookat[i][j]<<" shader:"<<shader->viewTransformMatrix[i][j]<<std::endl;
+            }
+            if(std::abs(glm_perspective[i][j]-shader->projectionTransformMatrix[i][j])>0.0001)
+            {
+                flag=false;
+                std::cout<<"projectionTransformMatrix not equal"<<std::endl;
+                std::cout<<"glm:"<<glm_perspective[i][j]<<" shader:"<<shader->projectionTransformMatrix[i][j]<<std::endl;
+            }
+            if(std::abs(glm_viewport[i][j]-shader->ViewportTransformMatrix[i][j])>0.0001)
+            {
+                flag=false;
+                std::cout<<"ViewportTransformMatrix not equal"<<std::endl;
+                std::cout<<"glm:"<<glm_viewport[i][j]<<" shader:"<<shader->ViewportTransformMatrix[i][j]<<std::endl;
+            }
+
+        }
+    if(!flag)TestInfo();
 }
