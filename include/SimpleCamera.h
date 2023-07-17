@@ -43,26 +43,18 @@ public:
 
         needUpdateLookAt=false;
 
-        return leftMat*rightMat;
+        lookAt = leftMat*rightMat;
+
+        return lookAt;
     }
     void setCameraPosition(ICameraSpace::Position_Type cameraPosition)
     {
         ICameraSpace::ICamera::setCameraPosition(cameraPosition);
         needUpdateLookAt=true;
     }
-    void setCameraDirection(ICameraSpace::Direction_Type cameraDirection)
+    void setCameraTarget(ICameraSpace::Position_Type cameraTarget)
     {
-        ICameraSpace::ICamera::setCameraDirection(cameraDirection);
-        needUpdateLookAt=true;
-    }
-    void setCameraRight(ICameraSpace::Direction_Type cameraRight)
-    {
-        ICameraSpace::ICamera::setCameraRight(cameraRight);
-        needUpdateLookAt=true;
-    }
-    void setCameraUp(ICameraSpace::Direction_Type cameraUp)
-    {
-        ICameraSpace::ICamera::setCameraUp(cameraUp);
+        ICameraSpace::ICamera::setCameraTarget(cameraTarget);
         needUpdateLookAt=true;
     }
 };

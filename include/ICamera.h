@@ -15,6 +15,8 @@ namespace ICameraSpace
     {
         private:
         Position_Type cameraPosition;
+        Position_Type cameraTarget;
+        Direction_Type globalUpDirection=Direction_Type(0.0f,1.0f,0.0f);
         Direction_Type cameraDirection; //应该是实际direction的负数
         Direction_Type cameraRight;
         Direction_Type cameraUp;
@@ -28,25 +30,27 @@ namespace ICameraSpace
         {
             return this->cameraPosition;
         }
-        void setCameraDirection(Direction_Type cameraDirection)
+        void setCameraTarget(Position_Type cameraTarget)
         {
-            this->cameraDirection=cameraDirection;
+            this->cameraTarget=cameraTarget;
+        }
+        Direction_Type getGlobalUpDirection()const
+        {
+            return this->globalUpDirection;
+        }
+        void initVector()
+        {
+            this->cameraDirection=glm::normalize(this->cameraPosition-this->cameraTarget);
+            this->cameraRight=glm::normalize(glm::cross(this->globalUpDirection,this->cameraDirection));
+            this->cameraUp=glm::normalize(glm::cross(this->cameraDirection,this->cameraRight));
         }
         Direction_Type getCameraDirection()const
         {
             return this->cameraDirection;
         }
-        void setCameraRight(Direction_Type cameraRight)
-        {
-            this->cameraRight=cameraRight;
-        }
         Direction_Type getCameraRight()const
         {
             return this->cameraRight;
-        }
-        void setCameraUp(Direction_Type cameraUp)
-        {
-            this->cameraUp=cameraUp;
         }
         Direction_Type getCameraUp()const
         {
