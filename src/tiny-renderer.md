@@ -115,8 +115,8 @@ glm库提供了lookAt()函数，可以直接进行构造，不过在本项目我
 - $M_{Perspective}$是透视投影矩阵，构造方式如下：
 $$
 \begin{bmatrix}
-\frac{1}{n\tan(\frac{fov}{2})}&0&0&0\\
-0&\frac{aspect}{n\tan(\frac{fov}{2})}&0&0\\
+\frac{1}{aspect\tan(\frac{fov}{2})}&0&0&0\\
+0&\frac{1}{\tan(\frac{fov}{2})}&0&0\\
 0&0&\frac{n+f}{n-f}&\frac{2nf}{n-f}\\
 0&0&1&0
 \end{bmatrix}
@@ -136,6 +136,28 @@ $$
 $$
 其中$width$和$height$分别表示屏幕的宽和高
 
+实现可以见line-renderer.cpp
+
+效果如下
+
+![](img/2023-07-17-15-27-51.png)
+
 ### Fragment Shader
 
+在Fragment Shader中我们需要进行插值，插值的内容包括
 
+- 顶点的颜色
+- 顶点的纹理坐标
+- 顶点的法向量(变得更加平滑)
+
+插值的方式是线性插值，即
+
+$$
+\vec{v} = \vec{v_1} + \frac{d}{d_1}(\vec{v_2} - \vec{v_1})
+$$
+
+#### 填充一个三角形
+
+在填充一个三角形的时候，我们需要知道三角形的三个顶点的坐标，颜色，纹理坐标，法向量,不过这些我们都可以在ObjModel当中找到，所以我们只需要知道三角形的三个顶点的索引即可
+
+跟triangle-renderer.cpp中的实现类似，我们需要找到bouding box，然后对于每一个像素点，我们需要判断这个像素点是否在三角形内部，如果在三角形内部，那么我们就需要计算这个像素点的颜色，纹理坐标，法向量

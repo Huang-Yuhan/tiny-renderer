@@ -37,7 +37,7 @@ private:
     /*function*/
     IShaderSpace::Matrix_Type GetPerspective();
     IShaderSpace::Matrix_Type GetViewport();
-    void drawLine(double x0,double y0,double x1,double y1);
+    void drawLine(int x0,int y0,int x1,int y1);
 public:
     LineRenderer(int width,int height,std::string filePath);
     void init();
@@ -66,7 +66,7 @@ width(width),height(height),filePath(filePath)
 void LineRenderer::init()
 {
     //set camera
-    camera->setCameraPosition(glm::vec3(5.0f,.0f,.0f));
+    camera->setCameraPosition(glm::vec3(3.0f,.0f,3.0f));
     camera->setCameraTarget(glm::vec3(0.0f,0.0f,0.0f));
     camera->initVector();
 
@@ -103,7 +103,6 @@ void LineRenderer::render()
         drawLine(sv1.x,sv1.y,sv2.x,sv2.y);
         drawLine(sv2.x,sv2.y,sv0.x,sv0.y);
     }
-    image->flip_vertically();
     image->write_tga_file("LineRenderer_output.tga");
 }
 
@@ -142,38 +141,35 @@ IShaderSpace::Matrix_Type LineRenderer::GetViewport()
     return viewportMatrix;
 }
 
-void LineRenderer::drawLine(double x0,double y0,double x1,double y1)
+void LineRenderer::drawLine(int x0,int y0,int x1,int y1)
 {
     std::cout<<"writing a line from ("<<x0<<","<<y0<<") to ("<<x1<<","<<y1<<")"<<std::endl;
 
-    //double t belongs to [0,1]
-    int dx,dy;
-    dx=x1-x0;
-    dy=y1-y0;
-    if(std::abs(dx)>std::abs(dy))
-    {
-        double xincr=1.0*dx/std::abs(dx);
-        double yincr=1.0*dy/std::abs(dx);
-        double x=x0,y=y0;
-        for(int t=std::abs(dx);t>0;t--)
-        {
-            image->set(x,y,TGAColor(255,255,255,255));
-            x+=xincr;
-            y+=yincr;
-            //std::cout<<"("<<x<<","<<y<<")"<<std::endl;
-        }
+    bool steep = false;
+    if (std::abs(x0-x1)<std::abs(y0-y1)) {
+        std::swap(x0, y0);
+        std::swap(x1, y1);
+        steep = true;
     }
-    else
-    {
-        double xincr=dx/std::abs(dy);
-        double yincr=dy/std::abs(dy);
-        double x=x0,y=y0;
-        for(int t=std::abs(dy);t>0;t--)
-        {
-            image->set(x,y,TGAColor(255,255,255,255));
-            x+=xincr;
-            y+=yincr;
-            //std::cout<<"("<<x<<","<<y<<")"<<std::endl;
+    if (x0>x1) {
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
+    int dx = x1-x0;
+    int dy = y1-y0;
+    int derror2 = std::abs(dy)*2;
+    int error2 = 0;
+    int y = y0;
+    for (int x=x0; x<=x1; x++) {
+        if (steep) {
+            image->set(y, x, TGAColor(255, 255, 255,255));
+        } else {
+            image->set(x, y, TGAColor(255, 255, 255,255));
+        }
+        error2 += derror2;
+        if (error2 > dx) {
+            y += (y1>y0?1:-1);
+            error2 -= dx*2;
         }
     }
 }
