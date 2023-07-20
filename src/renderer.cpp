@@ -5,7 +5,7 @@ int main()
 {
     std::string s;
     s = "../../assets/african_head/african_head.obj";
-
+    //s = "../../assets/floor.obj";
     Renderer renderer(1500,1500,s);
     renderer.setShader(std::make_shared<RendererShader>());
     renderer.render();

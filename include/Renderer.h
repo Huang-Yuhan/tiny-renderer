@@ -74,7 +74,7 @@ width(width),height(height),filePath(filePath)
     shader=std::make_shared<LineShader>();
 
     //set camera
-    camera->setCameraPosition(glm::vec3(0,0,5));
+    camera->setCameraPosition(glm::vec3(0,0,3));
     camera->setCameraTarget(glm::vec3(0,0,0));
     camera->initVector();
 
@@ -108,12 +108,12 @@ IShaderSpace::Matrix_Type Renderer::getPerspective()
 
 IShaderSpace::Matrix_Type Renderer::getViewport(){
     IShaderSpace::Matrix_Type viewportMatrix;
-    viewportMatrix[0][0] = width/2.0;
-    viewportMatrix[1][1] = height/2.0;
-    viewportMatrix[2][2] = (farPlane-nearPlane)/2.0;
-    viewportMatrix[0][3] = width/2.0;
-    viewportMatrix[1][3] = height/2.0;
-    viewportMatrix[2][3] = (farPlane+nearPlane)/2.0;
+    viewportMatrix[0][0] = width / 2.0f;
+    viewportMatrix[1][1] = height / 2.0f;
+    viewportMatrix[2][2] = (farPlane-nearPlane)/ 2.0f;
+    viewportMatrix[3][0] = width / 2.0f;
+    viewportMatrix[3][1] = height / 2.0f;
+    viewportMatrix[3][2] = (farPlane+nearPlane)/ 2.0f;
     return viewportMatrix;
 }
 
@@ -122,13 +122,16 @@ void Renderer::render()
 
     //set zbuffer
 
-    depth.resize(width*height,std::numeric_limits<double>::max());
+    depth.resize(width*height,-std::numeric_limits<double>::max());         //?
     zbuffer.resize(width*height,TGAColor(0,0,0,0));
 
     shader->modelTransformMatrix = glm::mat4(1.0f);
     shader->viewTransformMatrix = camera->GetLookAt();
     shader->projectionTransformMatrix = getPerspective();
     shader->ViewportTransformMatrix = getViewport();
+
+    shader->outputMatrix();
+
     //ready to render
 
     for(int i=0;i<model->faces.size();i++)drawTriangle(model->faces[i]);
@@ -161,6 +164,17 @@ void Renderer::drawTriangle(IModelSpace::Face_Type face)
     IShaderSpace::Vertex_Type screenVertex0 = shader->vertex_shader(v0);
     IShaderSpace::Vertex_Type screenVertex1 = shader->vertex_shader(v1);
     IShaderSpace::Vertex_Type screenVertex2 = shader->vertex_shader(v2);
+    /*
+    //debug,高亮点
+    for(int x = screenVertex0.x-20;x<=screenVertex0.x+20;x++)
+        for(int y = screenVertex0.y-20;y<=screenVertex0.y+20;y++)
+            zbuffer[x+y*width] = TGAColor(255,255,0,255);
+    for(int x = screenVertex1.x-20;x<=screenVertex1.x+20;x++)
+        for(int y = screenVertex1.y-20;y<=screenVertex1.y+20;y++)
+            zbuffer[x+y*width] = TGAColor(255,255,0,255);
+    for(int x = screenVertex2.x-20;x<=screenVertex2.x+20;x++)
+        for(int y = screenVertex2.y-20;y<=screenVertex2.y+20;y++)
+            zbuffer[x+y*width] = TGAColor(255,255,0,255);*/
 
     //计算三角形的包围盒
 
@@ -193,7 +207,10 @@ void Renderer::drawTriangle(IModelSpace::Face_Type face)
             //计算世界坐标下的深度插值
             float z = 1/(baryCentric[0]/v0.z+baryCentric[1]/v1.z+baryCentric[2]/v2.z);
             //如果深度小于缓存中的值，说明被覆盖掉了
-            if(z<depth[idx])continue;
+            if(z<depth[idx])
+            {
+                continue;
+            }
             //计算法向量插值
             IModelSpace::Normal_Type normal = (baryCentric[0]/v0.z*n0+baryCentric[1]/v1.z*n1+baryCentric[2]/v2.z*n2)*z;
             //计算uv坐标插值
@@ -202,7 +219,7 @@ void Renderer::drawTriangle(IModelSpace::Face_Type face)
             //计算颜色插值
             TGAColor color(0,0,0,0);
             //计算光照
-            const glm::vec3 lightDir = glm::normalize(glm::vec3(0,0,-1));
+            const glm::vec3 lightDir = glm::normalize(glm::vec3(0,-1,-1));
             shader->fragment_shader(-lightDir,normal,color);
             //写入颜色
             depth[idx] = z;

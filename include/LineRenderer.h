@@ -67,7 +67,7 @@ width(width),height(height),filePath(filePath)
 void LineRenderer::init()
 {
     //set camera
-    camera->setCameraPosition(glm::vec3(3.0f,.0f,3.0f));
+    camera->setCameraPosition(glm::vec3(.01f,3.0f,.0f));
     camera->setCameraTarget(glm::vec3(0.0f,0.0f,0.0f));
     camera->initVector();
 
@@ -77,6 +77,8 @@ void LineRenderer::init()
     shader->viewTransformMatrix=camera->GetLookAt();
     shader->projectionTransformMatrix=GetPerspective();
     shader->ViewportTransformMatrix=GetViewport();
+
+    shader->outputMatrix();
 
     checkMatrixEqual();
 
