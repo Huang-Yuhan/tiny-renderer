@@ -10,7 +10,7 @@ int main(int argc,char *argv[])
     std::string s;
     //s = argv[1];
     s = "../../assets/african_head/african_head.obj";
-    s = "../../assets/floor.obj";
+    //s = "../../assets/floor.obj";
     LineRenderer renderer(1500,1500,s);
     renderer.init();
     std::cout<<"init finished"<<std::endl;

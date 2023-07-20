@@ -74,7 +74,7 @@ width(width),height(height),filePath(filePath)
     shader=std::make_shared<LineShader>();
 
     //set camera
-    camera->setCameraPosition(glm::vec3(0,0,3));
+    camera->setCameraPosition(glm::vec3(3,0,3));
     camera->setCameraTarget(glm::vec3(0,0,0));
     camera->initVector();
 
@@ -122,7 +122,7 @@ void Renderer::render()
 
     //set zbuffer
 
-    depth.resize(width*height,-std::numeric_limits<double>::max());         //?
+    depth.resize(width*height,std::numeric_limits<int>::min());        //?
     zbuffer.resize(width*height,TGAColor(0,0,0,0));
 
     shader->modelTransformMatrix = glm::mat4(1.0f);
@@ -142,7 +142,6 @@ void Renderer::render()
         for(int y=0;y<height;y++)
             image->set(x,y,zbuffer[x+y*width]);
 
-    image->flip_vertically();
     image->write_tga_file("renderer.tga");
 
 }
@@ -204,7 +203,8 @@ void Renderer::drawTriangle(IModelSpace::Face_Type face)
             glm::vec3 baryCentric = getBaryCentric(glm::vec2(screenVertex0.x,screenVertex0.y),glm::vec2(screenVertex1.x,screenVertex1.y),glm::vec2(screenVertex2.x,screenVertex2.y),glm::vec2(x,y));
             //如果重心坐标有一个小于0,说明这个点在三角形外面
             if(baryCentric.x<0||baryCentric.y<0||baryCentric.z<0)continue;
-            //计算世界坐标下的深度插值
+            //!透视矫正出现问题
+            /*//计算世界坐标下的深度插值
             float z = 1/(baryCentric[0]/v0.z+baryCentric[1]/v1.z+baryCentric[2]/v2.z);
             //如果深度小于缓存中的值，说明被覆盖掉了
             if(z<depth[idx])
@@ -223,7 +223,16 @@ void Renderer::drawTriangle(IModelSpace::Face_Type face)
             shader->fragment_shader(-lightDir,normal,color);
             //写入颜色
             depth[idx] = z;
+            zbuffer[idx] = color;*/
+            float z =baryCentric[0]*v0.z+baryCentric[1]*v1.z+baryCentric[2]*v2.z;
+            if(z<depth[idx])continue;
+            IModelSpace::Normal_Type normal = baryCentric[0]*n0+baryCentric[1]*n1+baryCentric[2]*n2;
+            TGAColor color(0,0,0,0);
+            const glm::vec3 lightDir = glm::normalize(glm::vec3(0,-1,-1));
+            shader->fragment_shader(-lightDir,normal,color);
+            depth[idx] = z;
             zbuffer[idx] = color;
+
         }
     }
 
