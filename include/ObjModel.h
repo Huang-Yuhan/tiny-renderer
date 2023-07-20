@@ -5,6 +5,8 @@
 #include<fstream>
 #include<iostream>
 #include<memory>
+#pragma once
+
 namespace IModelSpace
 {
 
@@ -81,7 +83,7 @@ namespace IModelSpace
             }
 
             //输出读取的数据
-
+            /*
             std::cout<<"read file success !!\n"<<std::endl;
             std::cout<<"file name : "<<filePath<<std::endl<<std::endl;
             std::cout<<"vertices size: "<<vertices.size()<<std::endl<<std::endl;
@@ -112,8 +114,7 @@ namespace IModelSpace
                 std::cout<<std::get<1>(v)[0]<<"/"<<std::get<1>(v)[1]<<"/"<<std::get<1>(v)[2]<<" ";
                 std::cout<<std::get<2>(v)[0]<<"/"<<std::get<2>(v)[1]<<"/"<<std::get<2>(v)[2]<<std::endl;
             }
-
-            
+            */
 
         }
     };

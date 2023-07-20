@@ -1,4 +1,6 @@
 #include "ICamera.h"
+#pragma once
+
 /**
  * @brief 
  * 一个简单的摄像机类，实现了ICamera接口

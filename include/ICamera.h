@@ -1,5 +1,6 @@
 #include<glm/vec3.hpp>
 #include<glm/matrix.hpp>
+#pragma once
 
 namespace ICameraSpace
 {

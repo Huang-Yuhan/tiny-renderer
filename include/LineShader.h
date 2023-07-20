@@ -14,6 +14,7 @@
  */
 
 #include "IShader.h"
+#pragma once
 
 
 
@@ -42,7 +43,7 @@ public:
      * @brief 
      * 只是简单地继承，LineShader中不实现fragment shader 
      */
-    void fragment_shader(IShaderSpace::Light_Type light,TGAColor &color)override
+    void fragment_shader(IShaderSpace::Light_Type light,IShaderSpace::Noraml_Type normal,TGAColor &color)override
     {
         /*在LineShader中不实现fragment shader*/
         color=TGAColor(255,255,255,255);

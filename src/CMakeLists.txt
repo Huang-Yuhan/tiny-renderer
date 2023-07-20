@@ -15,3 +15,11 @@ target_include_directories(triangle_drawing PUBLIC ${PROJECT_SOURCE_DIR}/include
 set(LINE_RENDERER line-renderer.cpp tgaimage.cpp)
 
 add_executable(line_renderer ${LINE_RENDERER})
+
+target_include_directories(line_renderer PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
+set(RENDERER renderer.cpp tgaimage.cpp)
+
+add_executable(renderer ${RENDERER})
+
+target_include_directories(renderer PUBLIC ${PROJECT_SOURCE_DIR}/include)

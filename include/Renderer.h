@@ -18,6 +18,7 @@
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
 #include<limits>
+#pragma once
 
 class Renderer
 {
@@ -139,7 +140,7 @@ void Renderer::render()
             image->set(x,y,zbuffer[x+y*width]);
 
     image->flip_vertically();
-    image->write_tga_file("renderer.tag");
+    image->write_tga_file("renderer.tga");
 
 }
 
@@ -198,7 +199,14 @@ void Renderer::drawTriangle(IModelSpace::Face_Type face)
             //计算uv坐标插值
             IModelSpace::UV_Type uv = (baryCentric[0]/v0.z*uv0+baryCentric[1]/v1.z*uv1+baryCentric[2]/v2.z*uv2)*z;\
             //TODO:从uv图中获取颜色，然后传入到fragment shader中
-
+            //计算颜色插值
+            TGAColor color(0,0,0,0);
+            //计算光照
+            const glm::vec3 lightDir = glm::normalize(glm::vec3(0,0,-1));
+            shader->fragment_shader(-lightDir,normal,color);
+            //写入颜色
+            depth[idx] = z;
+            zbuffer[idx] = color;
         }
     }
 
