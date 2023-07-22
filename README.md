@@ -14,6 +14,18 @@ src/line-drawing 是画直线
 
 src/triangle-drawing 是画三角形
 
+## Line-Renderer
+
+src/line-renderer 是画模型的线框
+
+## Renderer( doing )
+
+src/renderer    渲染.obj文件
+
+## 其他
+
+src文件夹下还有一些.md文件，是一些学习笔记
+
 ## 一些编码规范
 
 - 代码中自己写的指针，用`std::unique_ptr`管理
