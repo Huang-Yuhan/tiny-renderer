@@ -11,8 +11,15 @@ class RendererShader:public IShaderSpace::IShader
     }
     void fragment_shader(IShaderSpace::Light_Type light,IShaderSpace::Noraml_Type normal,TGAColor &color)override
     {
-        float intensity=glm::dot(normal,light);
+
+        IShaderSpace::Noraml_Type n = IShaderSpace::Noraml_Type(glm::normalize(uniform_MIT * glm::vec4(normal, 0.0)));
+        IShaderSpace::Light_Type l = IShaderSpace::Light_Type(glm::normalize(uniform_M * glm::vec4(light, 0.0)));
+
+        double intensity=glm::dot(n,l);
         if(intensity<0)intensity =0;
-        color=TGAColor(255*intensity,255*intensity,255*intensity,255);
+        //std::cout<<"intensity:"<<intensity<<std::endl;
+        color[0] = color[0]*intensity;
+        color[1] = color[1]*intensity;
+        color[2] = color[2]*intensity;
     }
 };

@@ -74,7 +74,7 @@ width(width),height(height),filePath(filePath)
     shader=std::make_shared<LineShader>();
 
     //set camera
-    camera->setCameraPosition(glm::vec3(3,0,3));
+    camera->setCameraPosition(glm::vec3(1,1,3));
     camera->setCameraTarget(glm::vec3(0,0,0));
     camera->initVector();
 
@@ -107,7 +107,7 @@ IShaderSpace::Matrix_Type Renderer::getPerspective()
 }
 
 IShaderSpace::Matrix_Type Renderer::getViewport(){
-    IShaderSpace::Matrix_Type viewportMatrix;
+    IShaderSpace::Matrix_Type viewportMatrix = IShaderSpace::Matrix_Type(1);
     viewportMatrix[0][0] = width / 2.0f;
     viewportMatrix[1][1] = height / 2.0f;
     viewportMatrix[2][2] = (farPlane-nearPlane)/ 2.0f;
@@ -132,6 +132,9 @@ void Renderer::render()
 
     shader->outputMatrix();
 
+    shader->uniform_M = shader->projectionTransformMatrix * shader->viewTransformMatrix;
+    shader->uniform_MIT = glm::inverse(glm::transpose(shader->uniform_M));
+
     //ready to render
 
     for(int i=0;i<model->faces.size();i++)drawTriangle(model->faces[i]);
@@ -140,7 +143,10 @@ void Renderer::render()
     //save image
     for(int x=0;x<width;x++)
         for(int y=0;y<height;y++)
-            image->set(x,y,zbuffer[x+y*width]);
+            {
+                if(x==0||x==width-1||y==0||y==height-1)image->set(x,y,TGAColor(255,255,255,255));
+                else image->set(x,y,zbuffer[x+y*width]);
+            }
 
     image->write_tga_file("renderer.tga");
 
@@ -196,40 +202,22 @@ void Renderer::drawTriangle(IModelSpace::Face_Type face)
         for(int y=minY;y<=maxY;y++)
         {
 
-            int idx = x*width+y;
+            int idx = y*width+x;
 
             //计算重心坐标(注意插值矫正,我们所用的重心坐标应该是在世界空间下的重心坐标)
             //先计算屏幕坐标下的重心坐标
             glm::vec3 baryCentric = getBaryCentric(glm::vec2(screenVertex0.x,screenVertex0.y),glm::vec2(screenVertex1.x,screenVertex1.y),glm::vec2(screenVertex2.x,screenVertex2.y),glm::vec2(x,y));
             //如果重心坐标有一个小于0,说明这个点在三角形外面
             if(baryCentric.x<0||baryCentric.y<0||baryCentric.z<0)continue;
-            //!透视矫正出现问题
-            /*//计算世界坐标下的深度插值
-            float z = 1/(baryCentric[0]/v0.z+baryCentric[1]/v1.z+baryCentric[2]/v2.z);
-            //如果深度小于缓存中的值，说明被覆盖掉了
-            if(z<depth[idx])
-            {
-                continue;
-            }
-            //计算法向量插值
-            IModelSpace::Normal_Type normal = (baryCentric[0]/v0.z*n0+baryCentric[1]/v1.z*n1+baryCentric[2]/v2.z*n2)*z;
-            //计算uv坐标插值
-            IModelSpace::UV_Type uv = (baryCentric[0]/v0.z*uv0+baryCentric[1]/v1.z*uv1+baryCentric[2]/v2.z*uv2)*z;\
-            //TODO:从uv图中获取颜色，然后传入到fragment shader中
-            //计算颜色插值
-            TGAColor color(0,0,0,0);
-            //计算光照
-            const glm::vec3 lightDir = glm::normalize(glm::vec3(0,-1,-1));
-            shader->fragment_shader(-lightDir,normal,color);
-            //写入颜色
-            depth[idx] = z;
-            zbuffer[idx] = color;*/
             float z =baryCentric[0]*v0.z+baryCentric[1]*v1.z+baryCentric[2]*v2.z;
             if(z<depth[idx])continue;
-            IModelSpace::Normal_Type normal = baryCentric[0]*n0+baryCentric[1]*n1+baryCentric[2]*n2;
-            TGAColor color(0,0,0,0);
-            const glm::vec3 lightDir = glm::normalize(glm::vec3(0,-1,-1));
-            shader->fragment_shader(-lightDir,normal,color);
+            IModelSpace::UV_Type baryUV = baryCentric[0]*uv0+baryCentric[1]*uv1+baryCentric[2]*uv2;
+            TGAColor color = model->sample2D(model->diffusemap,baryUV);
+
+
+            IModelSpace::Normal_Type normal = model->getNormalFromFile(baryUV);
+            IShaderSpace::Light_Type lightDir = glm::vec3(1,1,1);
+            shader->fragment_shader(lightDir,normal,color);
             depth[idx] = z;
             zbuffer[idx] = color;
 

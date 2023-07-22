@@ -20,12 +20,13 @@ namespace IShaderSpace
     {
         public:
 
+        Matrix_Type uniform_MIT;
+        Matrix_Type uniform_M;
         /*data*/
         Matrix_Type modelTransformMatrix;
         Matrix_Type viewTransformMatrix;
         Matrix_Type projectionTransformMatrix;
         Matrix_Type ViewportTransformMatrix;
-
         virtual Vertex_Type vertex_shader(Vertex_Type vertex)=0;
         virtual void fragment_shader(Light_Type light,Noraml_Type normal,TGAColor &color)=0;
         void outputMatrix()

@@ -115,7 +115,22 @@ namespace IModelSpace
                 std::cout<<std::get<2>(v)[0]<<"/"<<std::get<2>(v)[1]<<"/"<<std::get<2>(v)[2]<<std::endl;
             }
             */
+            load_texture(filePath, "_diffuse.tga",    diffusemap );
+            load_texture(filePath, "_nm_tangent.tga", normalmap  );
+            load_texture(filePath, "_spec.tga",       specularmap);
+            diffusemap.flip_vertically();
+            normalmap.flip_vertically();
+            specularmap.flip_vertically();
+        }
 
+
+
+        void load_texture(std::string filename,std::string suffix,TGAImage &img)
+        {
+            size_t dot = filename.find_last_of(".");
+            if (dot==std::string::npos) return;
+            std::string texfile = filename.substr(0,dot) + suffix;
+            std::cout << "texture file " << texfile << " loading " << (img.read_tga_file(texfile.c_str()) ? "ok" : "failed") << std::endl;
         }
     };
 

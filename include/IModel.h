@@ -16,6 +16,9 @@ namespace IModelSpace
     {
     private:
     public:
+        TGAImage diffusemap{};         // diffuse color texture
+        TGAImage normalmap{};          // normal map texture
+        TGAImage specularmap{};        // specular map texture
         /**
          * @brief
          * 按照顺序依次为：
@@ -44,6 +47,15 @@ namespace IModelSpace
         std::vector<Normal_Type>& getNormals()
         {
             return normals;
+        }
+        Normal_Type getNormalFromFile(glm::vec2 uv)
+        {
+            TGAColor c = normalmap.get(uv.x*normalmap.width(), uv.y*normalmap.height());
+            return Normal_Type(c[0]*2.f/255.f-1., c[1]*2.f/255.f-1., c[2]*2.f/255.f-1.);
+        }
+        static TGAColor sample2D(const TGAImage &img, glm::vec2 uv) 
+        {
+            return img.get(uv.x*img.width(), uv.y*img.height());
         }
     };
 }
