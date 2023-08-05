@@ -215,7 +215,7 @@ void Renderer::drawTriangle(IModelSpace::Face_Type face)
             TGAColor color = model->sample2D(model->diffusemap,baryUV);
 
 
-            IModelSpace::Normal_Type normal = model->getNormalFromFile(baryUV);
+            IModelSpace::Normal_Type normal = n0*baryCentric.x+n1*baryCentric.y+n2*baryCentric.z;
             IShaderSpace::Light_Type lightDir = glm::vec3(1,1,1);
             shader->fragment_shader(lightDir,normal,color);
             depth[idx] = z;

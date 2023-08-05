@@ -10,17 +10,24 @@
 
 src/line-drawing 是画直线
 
+![line-drawing](/screenShot/line-drawing.png)
+
 ## 三角形
 
 src/triangle-drawing 是画三角形
+![triangle-drawing](/screenShot/triangle-drawing.png)
 
 ## Line-Renderer
 
 src/line-renderer 是画模型的线框
 
+![line-renderer](/screenShot/line-renderer.png)
+
 ## Renderer( doing )
 
 src/renderer    渲染.obj文件
+
+![renderer](/screenShot/renderer.png)
 
 ## 其他
 
